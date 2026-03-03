@@ -1,0 +1,85 @@
+flowchart TD
+    A([START])
+    B[/READ username and password/]
+    C{Credentials Valid?}
+    D[/PRINT: Invalid credentials/]
+    E([END])
+
+    F{browsing == YES?}
+    G[/PRINT Categories - READ category_choice/]
+    H{category_choice == 5?}
+    I[Display Products]
+    J[/READ product_id/]
+    K{product_id != 0?}
+    L{Stock > 0?}
+    M[Add to Cart]
+    N[/PRINT: Out of Stock/]
+
+    O{editing == YES?}
+    P[/Display Cart and Subtotal/]
+    Q[/READ cart_action/]
+    R{cart_action?}
+    S[Remove Selected Item]
+
+    T[subtotal = calculate total]
+    U[/Have discount code? YES or NO/]
+    V{has_discount == YES?}
+    W{Code Valid?}
+    X[Apply Discount]
+    Y[/PRINT: Invalid Code/]
+
+    Z{subtotal >= 10 dollars?}
+    AA{subtotal >= 40 dollars?}
+    AB[shipping = 0 - Free Shipping]
+    AC[shipping = 5.99 dollars]
+    AD[total = subtotal + shipping]
+
+    AE[/Select Payment Method/]
+    AF{payment_method?}
+    AG[Process Credit Card]
+    AH[Redirect to PayPal]
+    AI[Show Bank Details]
+    AJ{Payment Successful?}
+    AK[/PRINT: Order Confirmed/]
+    AL[/PRINT: Payment Failed/]
+    AM([END])
+
+    A --> B --> C
+    C -->|YES| G
+    C -->|NO| D --> E
+
+    G --> F
+    F -->|YES| G
+    F -->|NO| O
+
+    G --> H
+    H -->|YES - set browsing=NO| F
+    H -->|NO| I --> J --> K
+    K -->|YES| L
+    K -->|NO - back| G
+    L -->|YES| M --> G
+    L -->|NO| N --> G
+
+    O -->|YES| P --> Q --> R
+    O -->|NO| T
+    R -->|1 - checkout| O
+    R -->|2 - remove| S --> P
+    R -->|3 - browse| F
+
+    T --> U --> V
+    V -->|YES| W
+    V -->|NO| Z
+    W -->|YES| X --> Z
+    W -->|NO| Y --> Z
+
+    Z -->|YES| AA
+    Z -->|NO - under 10| O
+    AA -->|YES - free shipping| AB --> AD
+    AA -->|NO| AC --> AD
+    AD --> AE --> AF
+
+    AF -->|1| AG --> AJ
+    AF -->|2| AH --> AJ
+    AF -->|3| AI --> AJ
+    AJ -->|YES| AK --> AM
+    AJ -->|NO| AL --> AE

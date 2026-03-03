@@ -1,0 +1,65 @@
+flowchart TD
+    A([START])
+    B[/READ patient_id/]
+    C{Patient ID Exists?}
+    D[/PRINT: Not Found - Go to Reception/]
+    E([END])
+    F[another_action = YES]
+    G{another_action == YES?}
+    H[/READ action_choice - 1 Appointment or 2 Results/]
+    I{action_choice?}
+
+    subgraph APPT["Module 1: Make Appointment"]
+        J[/Display Clinics - READ clinic_choice/]
+        K[/Display Doctors - READ doctor_choice/]
+        L{slot_selected == NO?}
+        M[/Display Available Slots - READ slot_choice/]
+        N{slot_choice == 0?}
+        O{Slot Available?}
+        P[Confirm and Save Appointment]
+        Q[Send SMS Notification]
+        R[/PRINT: Appointment Confirmed/]
+        S[/PRINT: Slot Unavailable/]
+    end
+
+    subgraph TESTS["Module 2: View Test Results"]
+        T{Patient Has Test Orders?}
+        U[/Display Test List/]
+        V{Results Ready?}
+        W[/Display Results on Screen/]
+        X[/Download as PDF? YES or NO/]
+        Y{download == YES?}
+        Z[Generate and Download PDF]
+        AA[/PRINT: Results Not Ready Yet/]
+        AB[/PRINT: No Test Orders Found/]
+    end
+
+    AC[/Another action? YES or NO/]
+    AD[/PRINT: Thank you. Goodbye!/]
+    AE([END])
+
+    A --> B --> C
+    C -->|YES| F --> G
+    C -->|NO| D --> E
+
+    G -->|YES| H --> I
+    G -->|NO| AD --> AE
+
+    I -->|1| J --> K --> L
+    I -->|2| T
+
+    L -->|YES| M --> N
+    L -->|NO - done| AC
+    N -->|YES - back| AC
+    N -->|NO| O
+    O -->|YES| P --> Q --> R --> L
+    O -->|NO| S --> M
+
+    T -->|YES| U --> V
+    T -->|NO| AB --> AC
+    V -->|YES| W --> X --> Y
+    V -->|NO| AA --> AC
+    Y -->|YES| Z --> AC
+    Y -->|NO| AC
+
+    AC --> G

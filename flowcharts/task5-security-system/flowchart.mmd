@@ -1,0 +1,79 @@
+flowchart TD
+    A([START])
+    B{System Active - Armed?}
+    C[/PRINT: System Disarmed/]
+    D([END])
+    E[/PRINT: System ARMED - Monitoring Started/]
+
+    F[READ All Sensor Data]
+    G{Motion Sensor Triggered?}
+    H{Door or Window Sensor Triggered?}
+    I{threat_detected == YES?}
+
+    J[Activate Camera - Capture Footage]
+    K{Homeowner At Home?}
+    L[/PRINT: Possible False Alarm - READ response/]
+    M{false_alarm == YES?}
+    N[Reset Sensors - threat = NO]
+
+    O{Motion AND Door Both Triggered?}
+    P{Door OR Window Triggered?}
+    Q[alarm_level = 3 - HIGH]
+    R[alarm_level = 2 - MEDIUM]
+    S[alarm_level = 1 - LOW]
+
+    T[Send SMS Notification]
+    U[Send App Push Notification]
+    V[Send Email Alert]
+
+    W{alarm_level?}
+    X[Call Emergency Services - Sound Loud Siren]
+    Y[Sound Moderate Siren]
+    Z[/PRINT: Low Threat - Homeowner Notified/]
+
+    AA[WAIT 30 seconds]
+    AB[Re-read Sensor Data]
+    AC{Sensors Cleared?}
+    AD[Reset Alarm - threat = NO]
+    AE[/PRINT: Threat Still Active - Re-alerting/]
+
+    AF[WAIT 5 seconds - No Threat]
+    AG{Reset Command Received?}
+    AH[Reset Sensors - Re-arm System]
+
+    A --> B
+    B -->|YES| E --> F
+    B -->|NO| C --> D
+
+    F --> G
+    G -->|YES - set threat| H
+    G -->|NO| H
+    H -->|YES - set threat| I
+    H -->|NO| I
+
+    I -->|YES| J
+    I -->|NO| AF
+
+    J --> K
+    K -->|YES| L --> M
+    K -->|NO| O
+    M -->|YES - false alarm| N --> F
+    M -->|NO| O
+
+    O -->|YES - both triggered| Q --> T
+    O -->|NO| P
+    P -->|YES - door or window| R --> T
+    P -->|NO| S --> T
+
+    T --> U --> V --> W
+    W -->|3 - HIGH| X --> AA
+    W -->|2 - MEDIUM| Y --> AA
+    W -->|1 - LOW| Z --> AA
+
+    AA --> AB --> AC
+    AC -->|YES - cleared| AD --> AF
+    AC -->|NO - still active| AE --> F
+
+    AF --> AG
+    AG -->|YES| AH --> F
+    AG -->|NO - Keep monitoring| F

@@ -1,0 +1,26 @@
+=== Task 1 - ATM sistemi ===
+
+BEN:
+atm para cekme sistemi icin pseudocode yazar misin, pin 3 kez yanlis girilirse kart bloke olsun, bakiye kontrolu olsun, 20tl kati olmali, gunluk limit olsun, tekrar islem yapmak isteyebilsin
+
+AI:
+[pseudocode uretildi - bkz pseudocode.md]
+
+BEN:
+bunu graphviz dot koduna cevirir misin, oval start/end, parallelogram input/output, box process, diamond karar
+
+AI:
+[dot kodu uretildi - bkz flowchart.dot]
+
+BEN:
+simdi ayni seyi mermaid e cevirir misin
+
+AI:
+[mermaid kodu uretildi - bkz flowchart.mmd]
+
+BEN:
+pin loop geri donusu yanlis gibiydi duzeltir misin
+
+AI:
+[duzeltildi]
+

@@ -1,0 +1,26 @@
+=== Task 4 - Ders kayit sistemi ===
+
+BEN:
+universite ders kayit sistemi pseudocode lazim, ogrenci girisi, ders listesi, ders ekle, kontenjan kontrolu, onkosul kontrolu, ders catismasi kontrolu, 35 kredi limiti, ders sil, gpa 2.5 alti danismanlik onayi
+
+AI:
+[pseudocode uretildi - bkz pseudocode.md]
+
+BEN:
+cok fazla kontrol var bunlari dot kodunda nasil gosteririm
+
+AI:
+her kontrol ayri diamond node olarak gosterildi, sirayla kontrol ediliyor - bkz flowchart.dot
+
+BEN:
+mermaid versiyonu
+
+AI:
+[mermaid kodu uretildi - bkz flowchart.mmd]
+
+BEN:
+danismanlik onayi akisi dogru mu kontrol eder misin
+
+AI:
+[kontrol edildi, gpa < 2.5 dallanmasi duzeltildi]
+

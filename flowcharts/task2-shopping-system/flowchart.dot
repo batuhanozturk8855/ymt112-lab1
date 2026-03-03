@@ -1,0 +1,109 @@
+digraph Shopping {
+    rankdir=TB;
+    node [fontname="Arial", fontsize=11];
+
+    start       [shape=oval,          label="START"];
+    login_in    [shape=parallelogram, label="READ username & password"];
+    login_ok    [shape=diamond,       label="Credentials\nValid?"];
+    login_fail  [shape=parallelogram, label="PRINT: Invalid credentials"];
+    end_login   [shape=oval,          label="END"];
+
+    browse_loop [shape=diamond,       label="browsing == YES?"];
+    show_cats   [shape=parallelogram, label="PRINT Categories\nREAD category_choice"];
+    goto_cart   [shape=diamond,       label="category_choice\n== 5?"];
+    show_prods  [shape=box,           label="Display Products"];
+    read_prod   [shape=parallelogram, label="READ product_id"];
+    prod_zero   [shape=diamond,       label="product_id != 0?"];
+    stock_ok    [shape=diamond,       label="Stock > 0?"];
+    add_cart    [shape=box,           label="Add to Cart"];
+    no_stock    [shape=parallelogram, label="PRINT: Out of Stock"];
+
+    cart_loop   [shape=diamond,       label="editing == YES?"];
+    show_cart   [shape=parallelogram, label="Display Cart & Subtotal"];
+    cart_action [shape=parallelogram, label="READ cart_action\n(1-Checkout 2-Remove 3-Browse)"];
+    act_check   [shape=diamond,       label="cart_action?"];
+    remove_item [shape=box,           label="Remove Selected Item"];
+
+    calc_sub    [shape=box,           label="subtotal = calculate total"];
+    disc_ask    [shape=parallelogram, label="Have discount code? (YES/NO)"];
+    disc_check  [shape=diamond,       label="has_discount\n== YES?"];
+    disc_valid  [shape=diamond,       label="Code Valid?"];
+    apply_disc  [shape=box,           label="Apply Discount"];
+    inv_disc    [shape=parallelogram, label="PRINT: Invalid Code"];
+
+    min_check   [shape=diamond,       label="subtotal >= $10?"];
+    ship_check  [shape=diamond,       label="subtotal >= $40?"];
+    free_ship   [shape=box,           label="shipping_fee = 0\n(Free Shipping)"];
+    paid_ship   [shape=box,           label="shipping_fee = $5.99"];
+    calc_total  [shape=box,           label="total = subtotal + shipping_fee"];
+
+    pay_method  [shape=parallelogram, label="Select Payment Method\n(1-Card 2-PayPal 3-Bank)"];
+    pay_check   [shape=diamond,       label="payment_method?"];
+    pay_card    [shape=box,           label="Process Credit Card"];
+    pay_paypal  [shape=box,           label="Redirect to PayPal"];
+    pay_bank    [shape=box,           label="Show Bank Details"];
+    pay_ok      [shape=diamond,       label="Payment\nSuccessful?"];
+    confirmed   [shape=parallelogram, label="PRINT: Order Confirmed\n+ Order ID"];
+    pay_fail    [shape=parallelogram, label="PRINT: Payment Failed"];
+    end_main    [shape=oval,          label="END"];
+
+    start       -> login_in;
+    login_in    -> login_ok;
+    login_ok    -> show_cats   [label="YES"];
+    login_ok    -> login_fail  [label="NO"];
+    login_fail  -> end_login;
+
+    show_cats   -> browse_loop;
+    browse_loop -> show_cats   [label="YES"];
+    browse_loop -> cart_loop   [label="NO"];
+
+    show_cats   -> goto_cart;
+    goto_cart   -> browse_loop [label="YES (set browsing=NO)"];
+    goto_cart   -> show_prods  [label="NO"];
+    show_prods  -> read_prod;
+    read_prod   -> prod_zero;
+    prod_zero   -> stock_ok    [label="YES"];
+    prod_zero   -> show_cats   [label="NO (back)"];
+    stock_ok    -> add_cart    [label="YES"];
+    stock_ok    -> no_stock    [label="NO"];
+    add_cart    -> show_cats;
+    no_stock    -> show_cats;
+
+    cart_loop   -> show_cart   [label="YES"];
+    cart_loop   -> calc_sub    [label="NO"];
+    show_cart   -> cart_action;
+    cart_action -> act_check;
+    act_check   -> cart_loop   [label="1 (checkout)"];
+    act_check   -> remove_item [label="2 (remove)"];
+    act_check   -> browse_loop [label="3 (browse)"];
+    remove_item -> show_cart;
+
+    calc_sub    -> disc_ask;
+    disc_ask    -> disc_check;
+    disc_check  -> disc_valid  [label="YES"];
+    disc_check  -> min_check   [label="NO"];
+    disc_valid  -> apply_disc  [label="YES"];
+    disc_valid  -> inv_disc    [label="NO"];
+    apply_disc  -> min_check;
+    inv_disc    -> min_check;
+
+    min_check   -> ship_check  [label="YES (>= $10)"];
+    min_check   -> cart_loop   [label="NO (< $10)"];
+    ship_check  -> free_ship   [label="YES (>= $40)"];
+    ship_check  -> paid_ship   [label="NO (< $40)"];
+    free_ship   -> calc_total;
+    paid_ship   -> calc_total;
+    calc_total  -> pay_method;
+
+    pay_method  -> pay_check;
+    pay_check   -> pay_card    [label="1"];
+    pay_check   -> pay_paypal  [label="2"];
+    pay_check   -> pay_bank    [label="3"];
+    pay_card    -> pay_ok;
+    pay_paypal  -> pay_ok;
+    pay_bank    -> pay_ok;
+    pay_ok      -> confirmed   [label="YES"];
+    pay_ok      -> pay_fail    [label="NO"];
+    confirmed   -> end_main;
+    pay_fail    -> pay_method;
+}

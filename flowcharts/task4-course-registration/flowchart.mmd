@@ -1,0 +1,70 @@
+flowchart TD
+    A([START])
+    B[/READ student_id and password/]
+    C{Credentials Valid?}
+    D[/PRINT: Access Denied/]
+    E([END])
+    F[Load Student Data - GPA, credits, history]
+    G{registering == YES?}
+    H[/Display Menu - READ menu_choice/]
+    I{menu_choice?}
+    J[/Display All Available Courses/]
+
+    K[/READ course_code/]
+    L{Quota > 0?}
+    M{Prerequisites Met?}
+    N{No Schedule Conflict?}
+    O{total_credits + course <= 35?}
+    P[Add Course - Update total_credits]
+    Q[/PRINT: Course Added/]
+    R[/PRINT: Course Full/]
+    S[/PRINT: Prerequisites Not Met/]
+    T[/PRINT: Schedule Conflict/]
+    U[/PRINT: Credit Limit Exceeded/]
+
+    V[/READ drop_code/]
+    W{Course in Registered List?}
+    X[Remove Course - Update credits]
+    Y[/PRINT: Course Dropped/]
+    Z[/PRINT: Course Not Found/]
+
+    AA[/Display Registered Courses and Total Credits/]
+
+    AB{GPA < 2.5?}
+    AC[Send Advisor Approval Request]
+    AD[/PRINT: Awaiting Advisor Approval/]
+    AE[Finalize Registration]
+    AF[/PRINT: Registration Confirmed/]
+    AG[/Display Registration Summary/]
+    AH([END])
+
+    A --> B --> C
+    C -->|YES| F --> G
+    C -->|NO| D --> E
+
+    G -->|YES| H --> I
+    G -->|NO| AB
+
+    I -->|1 - view| J --> H
+    I -->|2 - add| K
+    I -->|3 - drop| V
+    I -->|4 - my courses| AA --> H
+    I -->|5 - confirm| G
+
+    K --> L
+    L -->|NO - full| R --> H
+    L -->|YES| M
+    M -->|NO| S --> H
+    M -->|YES| N
+    N -->|NO - conflict| T --> H
+    N -->|YES| O
+    O -->|NO - over limit| U --> H
+    O -->|YES| P --> Q --> H
+
+    V --> W
+    W -->|YES| X --> Y --> H
+    W -->|NO| Z --> H
+
+    AB -->|YES - GPA below 2.5| AC --> AD --> AG
+    AB -->|NO| AE --> AF --> AG
+    AG --> AH

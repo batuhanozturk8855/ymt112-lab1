@@ -1,0 +1,94 @@
+digraph Hospital {
+    rankdir=TB;
+    node [fontname="Arial", fontsize=11];
+
+    start        [shape=oval,          label="START"];
+    read_id      [shape=parallelogram, label="READ patient_id"];
+    id_valid     [shape=diamond,       label="Patient ID\nExists?"];
+    not_found    [shape=parallelogram, label="PRINT: Not Found\nGo to Reception"];
+    end_nf       [shape=oval,          label="END"];
+
+    set_loop     [shape=box,           label="another_action = YES"];
+    loop_check   [shape=diamond,       label="another_action\n== YES?"];
+    sel_action   [shape=parallelogram, label="READ action_choice\n(1-Appointment  2-Results)"];
+    action_check [shape=diamond,       label="action_choice?"];
+
+    subgraph cluster_appt {
+        label="Module 1: Make Appointment";
+        style=dashed; color=blue;
+        sel_clinic   [shape=parallelogram, label="Display Clinics\nREAD clinic_choice"];
+        sel_doctor   [shape=parallelogram, label="Display Doctors\nREAD doctor_choice"];
+        slot_loop    [shape=diamond,       label="slot_selected\n== NO?"];
+        show_slots   [shape=parallelogram, label="Display Available Slots\nREAD slot_choice"];
+        slot_back    [shape=diamond,       label="slot_choice == 0?"];
+        slot_avail   [shape=diamond,       label="Slot Available?"];
+        confirm_appt [shape=box,           label="Confirm & Save Appointment"];
+        send_sms     [shape=box,           label="Send SMS Notification"];
+        appt_done    [shape=parallelogram, label="PRINT: Appointment Confirmed"];
+        slot_taken   [shape=parallelogram, label="PRINT: Slot Unavailable"];
+    }
+
+    subgraph cluster_tests {
+        label="Module 2: View Test Results";
+        style=dashed; color=green;
+        has_tests    [shape=diamond,       label="Patient Has\nTest Orders?"];
+        show_tests   [shape=parallelogram, label="Display Test List"];
+        res_ready    [shape=diamond,       label="Results Ready?"];
+        show_res     [shape=parallelogram, label="Display Results on Screen"];
+        ask_pdf      [shape=parallelogram, label="Download as PDF? (YES/NO)"];
+        pdf_check    [shape=diamond,       label="download == YES?"];
+        gen_pdf      [shape=box,           label="Generate & Download PDF"];
+        not_ready    [shape=parallelogram, label="PRINT: Results Not Ready Yet"];
+        no_tests     [shape=parallelogram, label="PRINT: No Test Orders Found"];
+    }
+
+    ask_more     [shape=parallelogram, label="Another action? (YES/NO)"];
+    read_more    [shape=parallelogram, label="READ another_action"];
+    goodbye      [shape=parallelogram, label="PRINT: Thank you. Goodbye!"];
+    end_main     [shape=oval,          label="END"];
+
+    start        -> read_id;
+    read_id      -> id_valid;
+    id_valid     -> set_loop    [label="YES"];
+    id_valid     -> not_found   [label="NO"];
+    not_found    -> end_nf;
+
+    set_loop     -> loop_check;
+    loop_check   -> sel_action  [label="YES"];
+    loop_check   -> goodbye     [label="NO"];
+    goodbye      -> end_main;
+
+    sel_action   -> action_check;
+    action_check -> sel_clinic  [label="1"];
+    action_check -> has_tests   [label="2"];
+
+    sel_clinic   -> sel_doctor;
+    sel_doctor   -> slot_loop;
+    slot_loop    -> show_slots  [label="YES"];
+    slot_loop    -> ask_more    [label="NO (done)"];
+    show_slots   -> slot_back;
+    slot_back    -> ask_more    [label="YES (back)"];
+    slot_back    -> slot_avail  [label="NO"];
+    slot_avail   -> confirm_appt [label="YES"];
+    slot_avail   -> slot_taken  [label="NO"];
+    confirm_appt -> send_sms;
+    send_sms     -> appt_done;
+    appt_done    -> slot_loop;
+    slot_taken   -> show_slots;
+
+    has_tests    -> show_tests  [label="YES"];
+    has_tests    -> no_tests    [label="NO"];
+    show_tests   -> res_ready;
+    res_ready    -> show_res    [label="YES"];
+    res_ready    -> not_ready   [label="NO"];
+    show_res     -> ask_pdf;
+    ask_pdf      -> pdf_check;
+    pdf_check    -> gen_pdf     [label="YES"];
+    pdf_check    -> ask_more    [label="NO"];
+    gen_pdf      -> ask_more;
+    not_ready    -> ask_more;
+    no_tests     -> ask_more;
+
+    ask_more     -> read_more;
+    read_more    -> loop_check;
+}

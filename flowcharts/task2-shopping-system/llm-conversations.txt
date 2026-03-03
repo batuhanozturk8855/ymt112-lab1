@@ -1,0 +1,26 @@
+=== Task 2 - Online alisveris sepeti ===
+
+BEN:
+online alisveris sitesi icin akis diyagrami yapacagim once pseudocode lazim, kullanici girisi olsun, urun kategorileri gezilsin, sepete ekle, stok kontrolu, indirim kodu, minimum siparis 10 dolar, 40 dolar ustu kargo bedava, odeme secenekleri
+
+AI:
+[pseudocode uretildi - bkz pseudocode.md]
+
+BEN:
+graphviz dot koduna cevirir misin bunu
+
+AI:
+[dot kodu uretildi - bkz flowchart.dot]
+
+BEN:
+mermaid versiyonu da lazim
+
+AI:
+[mermaid kodu uretildi - bkz flowchart.mmd]
+
+BEN:
+sepet duzenleme dongusu eksik kalmis ekler misin
+
+AI:
+[eklendi ve duzeltildi]
+

@@ -1,0 +1,99 @@
+digraph CourseReg {
+    rankdir=TB;
+    node [fontname="Arial", fontsize=11];
+
+    start        [shape=oval,          label="START"];
+    read_creds   [shape=parallelogram, label="READ student_id & password"];
+    cred_ok      [shape=diamond,       label="Credentials\nValid?"];
+    denied       [shape=parallelogram, label="PRINT: Access Denied"];
+    end_deny     [shape=oval,          label="END"];
+    load_student [shape=box,           label="Load Student Data\n(GPA, credits, history)"];
+
+    menu_loop    [shape=diamond,       label="registering\n== YES?"];
+    show_menu    [shape=parallelogram, label="Display Menu\nREAD menu_choice"];
+    menu_check   [shape=diamond,       label="menu_choice?"];
+    show_courses [shape=parallelogram, label="Display All Available Courses"];
+
+    read_code    [shape=parallelogram, label="READ course_code"];
+    quota_check  [shape=diamond,       label="Quota > 0?"];
+    prereq_check [shape=diamond,       label="Prerequisites\nMet?"];
+    sched_check  [shape=diamond,       label="No Schedule\nConflict?"];
+    credit_check [shape=diamond,       label="total_credits +\ncourse.credits <= 35?"];
+    add_course   [shape=box,           label="Add Course\nUpdate total_credits"];
+    added_msg    [shape=parallelogram, label="PRINT: Course Added"];
+
+    full_msg     [shape=parallelogram, label="PRINT: Course Full"];
+    prereq_msg   [shape=parallelogram, label="PRINT: Prerequisites\nNot Met"];
+    sched_msg    [shape=parallelogram, label="PRINT: Schedule Conflict"];
+    credit_msg   [shape=parallelogram, label="PRINT: Credit Limit Exceeded"];
+
+    drop_code    [shape=parallelogram, label="READ drop_code"];
+    in_list      [shape=diamond,       label="Course in\nRegistered List?"];
+    drop_course  [shape=box,           label="Remove Course\nUpdate credits"];
+    drop_msg     [shape=parallelogram, label="PRINT: Course Dropped"];
+    not_in_list  [shape=parallelogram, label="PRINT: Course Not Found"];
+    view_reg     [shape=parallelogram, label="Display Registered Courses\n& Total Credits"];
+
+    gpa_check    [shape=diamond,       label="GPA < 2.5?"];
+    advisor_req  [shape=box,           label="Send Advisor Approval Request"];
+    advisor_msg  [shape=parallelogram, label="PRINT: Awaiting Advisor Approval"];
+    finalize     [shape=box,           label="Finalize Registration"];
+    confirmed    [shape=parallelogram, label="PRINT: Registration Confirmed"];
+    summary      [shape=parallelogram, label="Display Registration Summary"];
+    end_main     [shape=oval,          label="END"];
+
+    start        -> read_creds;
+    read_creds   -> cred_ok;
+    cred_ok      -> load_student [label="YES"];
+    cred_ok      -> denied       [label="NO"];
+    denied       -> end_deny;
+
+    load_student -> menu_loop;
+    menu_loop    -> show_menu    [label="YES"];
+    menu_loop    -> gpa_check    [label="NO (confirm)"];
+
+    show_menu    -> menu_check;
+    menu_check   -> show_courses [label="1"];
+    menu_check   -> read_code    [label="2 (add)"];
+    menu_check   -> drop_code    [label="3 (drop)"];
+    menu_check   -> view_reg     [label="4 (view)"];
+    menu_check   -> menu_loop    [label="5 (confirm)"];
+
+    show_courses -> show_menu;
+    view_reg     -> show_menu;
+
+    read_code    -> quota_check;
+    quota_check  -> prereq_check [label="YES"];
+    quota_check  -> full_msg     [label="NO"];
+    full_msg     -> show_menu;
+
+    prereq_check -> sched_check  [label="YES"];
+    prereq_check -> prereq_msg   [label="NO"];
+    prereq_msg   -> show_menu;
+
+    sched_check  -> credit_check [label="YES"];
+    sched_check  -> sched_msg    [label="NO (conflict)"];
+    sched_msg    -> show_menu;
+
+    credit_check -> add_course   [label="YES"];
+    credit_check -> credit_msg   [label="NO"];
+    credit_msg   -> show_menu;
+
+    add_course   -> added_msg;
+    added_msg    -> show_menu;
+
+    drop_code    -> in_list;
+    in_list      -> drop_course  [label="YES"];
+    in_list      -> not_in_list  [label="NO"];
+    drop_course  -> drop_msg;
+    drop_msg     -> show_menu;
+    not_in_list  -> show_menu;
+
+    gpa_check    -> advisor_req  [label="YES (< 2.5)"];
+    gpa_check    -> finalize     [label="NO (>= 2.5)"];
+    advisor_req  -> advisor_msg;
+    advisor_msg  -> summary;
+    finalize     -> confirmed;
+    confirmed    -> summary;
+    summary      -> end_main;
+}

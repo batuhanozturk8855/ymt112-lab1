@@ -1,0 +1,26 @@
+=== Task 5 - Akilli ev guvenlik sistemi ===
+
+BEN:
+akilli ev guvenlik sistemi pseudocode, sistem aktif mi kontrolu, surekli sensor okuma dongusu, hareket sensoru, kapi pencere sensoru, kamera aktifle, yanlis alarm kontrolu, alarm seviyesi 1 2 3, sms app email bildirim, reset
+
+AI:
+[pseudocode uretildi - bkz pseudocode.md]
+
+BEN:
+sonsuz dongu dot kodunda nasil gosterilir
+
+AI:
+geri ok ile sensor okuma node una donuluyor, "Keep monitoring" etiketiyle - bkz flowchart.dot
+
+BEN:
+mermaid e cevirir misin
+
+AI:
+[mermaid kodu uretildi - bkz flowchart.mmd]
+
+BEN:
+yanlis alarm durumunda akis nereye donuyor kontrol eder misin
+
+AI:
+[yanlis alarm sonrasi sensore geri donusu duzeltildi]
+

@@ -1,0 +1,101 @@
+digraph Security {
+    rankdir=TB;
+    node [fontname="Arial", fontsize=11];
+
+    start        [shape=oval,          label="START"];
+    sys_active   [shape=diamond,       label="System Active\n(Armed)?"];
+    disarmed     [shape=parallelogram, label="PRINT: System Disarmed"];
+    end_dis      [shape=oval,          label="END"];
+    print_armed  [shape=parallelogram, label="PRINT: System ARMED\nMonitoring Started"];
+
+    read_sensors [shape=box,           label="READ All Sensor Data"];
+    motion_check [shape=diamond,       label="Motion Sensor\nTriggered?"];
+    door_check   [shape=diamond,       label="Door/Window\nSensor Triggered?"];
+    threat_check [shape=diamond,       label="threat_detected\n== YES?"];
+
+    activate_cam [shape=box,           label="Activate Camera\nCapture Footage"];
+    owner_home   [shape=diamond,       label="Homeowner\nAt Home?"];
+    false_alarm  [shape=parallelogram, label="PRINT: Possible False Alarm\nREAD false_alarm_response"];
+    is_false     [shape=diamond,       label="false_alarm_response\n== YES?"];
+    reset_false  [shape=box,           label="Reset Sensors\nthreat_detected = NO"];
+
+    level_check  [shape=diamond,       label="Motion AND\nDoor triggered?"];
+    level_med    [shape=diamond,       label="Door OR Window\ntriggered?"];
+    level_high   [shape=box,           label="alarm_level = 3 (HIGH)"];
+    level_medium [shape=box,           label="alarm_level = 2 (MEDIUM)"];
+    level_low    [shape=box,           label="alarm_level = 1 (LOW)"];
+
+    send_sms     [shape=box,           label="Send SMS Notification"];
+    send_app     [shape=box,           label="Send App Push Notification"];
+    send_email   [shape=box,           label="Send Email Alert"];
+
+    alarm_level  [shape=diamond,       label="alarm_level?"];
+    call_police  [shape=box,           label="Call Emergency Services\nSound Loud Siren"];
+    mod_siren    [shape=box,           label="Sound Moderate Siren"];
+    low_alert    [shape=parallelogram, label="PRINT: Low Threat\nHomeowner Notified"];
+
+    wait_30      [shape=box,           label="WAIT 30 seconds"];
+    recheck      [shape=box,           label="Re-read Sensor Data"];
+    cleared      [shape=diamond,       label="Sensors Cleared?"];
+    reset_alarm  [shape=box,           label="Reset Alarm\nthreat_detected = NO"];
+    still_active [shape=parallelogram, label="PRINT: Threat Still Active\nRe-alerting..."];
+
+    no_threat    [shape=box,           label="WAIT 5 seconds\n(No Threat)"];
+    reset_cmd    [shape=diamond,       label="Reset Command\nReceived?"];
+    do_reset     [shape=box,           label="Reset Sensors\nRe-arm System"];
+
+    start        -> sys_active;
+    sys_active   -> print_armed  [label="YES"];
+    sys_active   -> disarmed     [label="NO"];
+    disarmed     -> end_dis;
+
+    print_armed  -> read_sensors;
+    read_sensors -> motion_check;
+    motion_check -> door_check   [label="NO"];
+    motion_check -> door_check   [label="YES (set threat=YES)"];
+    door_check   -> threat_check [label="NO"];
+    door_check   -> threat_check [label="YES (set threat=YES)"];
+
+    threat_check -> activate_cam [label="YES"];
+    threat_check -> no_threat    [label="NO"];
+
+    activate_cam -> owner_home;
+    owner_home   -> false_alarm  [label="YES"];
+    owner_home   -> level_check  [label="NO"];
+    false_alarm  -> is_false;
+    is_false     -> reset_false  [label="YES"];
+    is_false     -> level_check  [label="NO"];
+    reset_false  -> read_sensors [label="Continue monitoring"];
+
+    level_check  -> level_high   [label="YES (both)"];
+    level_check  -> level_med    [label="NO"];
+    level_med    -> level_medium [label="YES"];
+    level_med    -> level_low    [label="NO"];
+
+    level_high   -> send_sms;
+    level_medium -> send_sms;
+    level_low    -> send_sms;
+    send_sms     -> send_app;
+    send_app     -> send_email;
+    send_email   -> alarm_level;
+
+    alarm_level  -> call_police  [label="3 (HIGH)"];
+    alarm_level  -> mod_siren    [label="2 (MEDIUM)"];
+    alarm_level  -> low_alert    [label="1 (LOW)"];
+
+    call_police  -> wait_30;
+    mod_siren    -> wait_30;
+    low_alert    -> wait_30;
+
+    wait_30      -> recheck;
+    recheck      -> cleared;
+    cleared      -> reset_alarm  [label="YES"];
+    cleared      -> still_active [label="NO"];
+    reset_alarm  -> no_threat;
+    still_active -> read_sensors [label="Re-alert"];
+
+    no_threat    -> reset_cmd;
+    reset_cmd    -> do_reset     [label="YES"];
+    reset_cmd    -> read_sensors [label="NO (Keep monitoring)"];
+    do_reset     -> read_sensors;
+}

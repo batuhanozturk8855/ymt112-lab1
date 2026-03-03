@@ -1,0 +1,63 @@
+digraph ATM {
+    rankdir=TB;
+    node [fontname="Arial", fontsize=11];
+
+    start      [shape=oval,         label="START"];
+    insert     [shape=parallelogram, label="Insert Card"];
+    set_att    [shape=box,           label="attempts = 0"];
+    chk_att    [shape=diamond,       label="attempts < 3?"];
+    enter_pin  [shape=parallelogram, label="Enter PIN"];
+    pin_ok     [shape=diamond,       label="PIN Correct?"];
+    inc_att    [shape=box,           label="attempts = attempts + 1"];
+    blocked    [shape=parallelogram, label="PRINT: Card Blocked\nEject Card"];
+    end_block  [shape=oval,          label="END"];
+    get_bal    [shape=box,           label="Query Account Balance"];
+    set_loop   [shape=box,           label="another_transaction = YES"];
+    loop_check [shape=diamond,       label="another_transaction\n== YES?"];
+    enter_amt  [shape=parallelogram, label="Enter Withdrawal Amount"];
+    mult_check [shape=diamond,       label="amount % 20 == 0?"];
+    bal_check  [shape=diamond,       label="amount <= balance?"];
+    lim_check  [shape=diamond,       label="amount <= daily_limit?"];
+    dispense   [shape=box,           label="Dispense Cash"];
+    receipt    [shape=parallelogram, label="PRINT Receipt"];
+    upd_bal    [shape=box,           label="balance = balance - amount\nUpdate Account"];
+    ask_again  [shape=parallelogram, label="Another transaction? (YES/NO)"];
+    read_again [shape=parallelogram, label="READ another_transaction"];
+    eject      [shape=parallelogram, label="PRINT Goodbye\nEject Card"];
+    end_main   [shape=oval,          label="END"];
+
+    start      -> insert;
+    insert     -> set_att;
+    set_att    -> chk_att;
+
+    chk_att    -> enter_pin  [label="YES"];
+    chk_att    -> blocked    [label="NO (3 attempts)"];
+    blocked    -> end_block;
+
+    enter_pin  -> pin_ok;
+    pin_ok     -> get_bal    [label="YES"];
+    pin_ok     -> inc_att    [label="NO"];
+    inc_att    -> chk_att;
+
+    get_bal    -> set_loop;
+    set_loop   -> loop_check;
+    loop_check -> enter_amt  [label="YES"];
+    loop_check -> eject      [label="NO"];
+    eject      -> end_main;
+
+    enter_amt  -> mult_check;
+    mult_check -> bal_check  [label="YES"];
+    mult_check -> enter_amt  [label="NO\n(not multiple of 20)"];
+
+    bal_check  -> lim_check  [label="YES"];
+    bal_check  -> enter_amt  [label="NO\n(insufficient)"];
+
+    lim_check  -> dispense   [label="YES"];
+    lim_check  -> enter_amt  [label="NO\n(limit exceeded)"];
+
+    dispense   -> receipt;
+    receipt    -> upd_bal;
+    upd_bal    -> ask_again;
+    ask_again  -> read_again;
+    read_again -> loop_check;
+}

@@ -1,0 +1,20 @@
+=== Task 3 - Hastane randevu sistemi ===
+
+BEN:
+hastane icin randevu alma ve tahlil sonucu goruntuleme sistemi pseudocode lazim, tc ile giris, randevu al veya sonuc gor secenegi, randevuda klinik doktor saat secimi sms gonderilsin, tahlilde sonuc hazir mi kontrolu pdf indirme
+
+AI:
+[pseudocode uretildi - bkz pseudocode.md]
+
+BEN:
+dot koduna cevirir misin, iki modul ayri ayri gozukebilir mi
+
+AI:
+[dot kodu subgraph ile uretildi - bkz flowchart.dot]
+
+BEN:
+mermaid de subgraph kullanabilir miyiz ayni sekilde
+
+AI:
+[mermaid subgraph ile uretildi - bkz flowchart.mmd]
+

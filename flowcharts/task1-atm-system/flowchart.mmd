@@ -1,0 +1,40 @@
+flowchart TD
+    A([START])
+    B[/Insert Card/]
+    C[attempts = 0]
+    D{attempts < 3?}
+    E[/Enter PIN/]
+    F{PIN Correct?}
+    G[attempts = attempts + 1]
+    H[/PRINT: Card Blocked - Eject Card/]
+    I([END])
+    J[Query Account Balance]
+    K[another_transaction = YES]
+    L{another_transaction == YES?}
+    M[/Enter Withdrawal Amount/]
+    N{amount % 20 == 0?}
+    O{amount <= balance?}
+    P{amount <= daily_limit?}
+    Q[Dispense Cash]
+    R[/PRINT Receipt/]
+    S[Update Account Balance]
+    T[/Another transaction? YES or NO/]
+    U[/PRINT Goodbye - Eject Card/]
+    V([END])
+
+    A --> B --> C --> D
+    D -->|YES| E
+    D -->|NO - 3 attempts| H --> I
+    E --> F
+    F -->|YES| J
+    F -->|NO| G --> D
+    J --> K --> L
+    L -->|YES| M
+    L -->|NO| U --> V
+    M --> N
+    N -->|NO - not multiple of 20| M
+    N -->|YES| O
+    O -->|NO - insufficient balance| M
+    O -->|YES| P
+    P -->|NO - limit exceeded| M
+    P -->|YES| Q --> R --> S --> T --> L
